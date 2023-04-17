@@ -53,8 +53,8 @@ jobs:
           key: frontend-build
       - slack/notify:
           channel: udacity
-          event: success
-          template: basic_success_1
+          event: fail
+          template: basic_fail_1
 
   build-backend:
     docker:
