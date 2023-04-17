@@ -100,10 +100,10 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [frontend-scan]
       - run:
           name: Scan frontend for vulnerabilities
-          - restore_cache:
-              keys: [frontend-scan]
           command: |
             cd frontend
             npm install
@@ -114,10 +114,10 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-scan]
       - run:
           name: Scan backend for vulnerabilities
-          - restore_cache:
-              keys: [backend-scan]
           command: |
             cd backend
             npm install
