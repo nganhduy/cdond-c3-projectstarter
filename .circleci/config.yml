@@ -52,9 +52,6 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
           event: pass
           template: basic_success_1
 
