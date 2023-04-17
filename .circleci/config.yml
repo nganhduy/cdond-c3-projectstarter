@@ -55,6 +55,10 @@ jobs:
           channel: udacity
           event: pass
           template: basic_success_1
+      - slack/notify:
+          channel: udacity
+          event: fail
+          template: basic_fail_1
 
   build-backend:
     docker:
