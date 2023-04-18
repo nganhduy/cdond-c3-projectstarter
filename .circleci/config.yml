@@ -16,7 +16,17 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udapeople-<<parameters.environment>>-${CIRCLE_WORKFLOW_ID:0:7}
-
+  slack-notify: 
+    description: Send notification in slack
+    steps: 
+      - slack/notify:
+          channel: udacity
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          channel: udacity
+          event: pass
+          template: basic_success_1
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
 #     parameters:
@@ -53,14 +63,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - slack/notify:
-          channel: udacity
-          event: pass
-          template: basic_success_1
-      - slack/notify:
-          channel: udacity
-          event: fail
-          template: basic_fail_1
+      - slack-notify
 
   build-backend:
     docker:
@@ -78,6 +81,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - slack-notify
 
   test-frontend:
     docker:
@@ -95,6 +99,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-test
+      - slack-notify
 
   test-backend:
     docker:
@@ -112,7 +117,8 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-test
-            
+      - slack-notify
+
   scan-frontend:
     docker:
       - image: cimg/node:14.19.3
@@ -131,6 +137,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-scan
+      - slack-notify
 
   scan-backend:
     docker:
@@ -150,6 +157,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-scan
+      - slack-notify
 
   deploy-infrastructure:
     docker:
@@ -187,26 +195,36 @@ jobs:
           environment: "backend"
       - destroy-environment:
           environment: "frontend"
+      - slack-notify
       # Here's where you will add some code to rollback on failure      
 
-#   configure-infrastructure:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # Your code here
-#             exit 1
-#       - run:
-#           name: Configure server
-#           command: |
-#             # Your code here
-#             exit 1
-#       # Here's where you will add some code to rollback on failure      
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["00:d4:aa:57:90:8f:db:43:f0:3d:63:75:6d:e6:9d:ed"]
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update && \
+            apt-get install -y tar gzip ansible awscli
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+      - slack-notify
+      # Here's where you will add some code to rollback on failure      
 
 #   run-migrations:
 #     docker:
