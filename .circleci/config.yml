@@ -242,14 +242,14 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/node:14.19.3
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update nodejs~=14 npm
-            yum install -y tar gzip
+            curl -sL https://deb.nodesource.com/setup_14.x | bash -
+            apt-get install -y nodejs
       - run:
           name: Get backend url
           command: |
@@ -267,10 +267,7 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - revert-migrations
-      - destroy-environment:
-          environment: "backend"
-      - destroy-environment:
-          environment: "frontend" 
+      - destroy-environment   
                     
 #   deploy-backend:
 #     docker:
