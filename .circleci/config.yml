@@ -36,14 +36,12 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            export SUCCESS=$(1)
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
+              cd ~/project/backend
+              npm install
             #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
             fi
             
 jobs:
@@ -244,21 +242,14 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/node:14.19.3
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apt update
-            apt-get install -y nodejs
-            apt install software-properties-common
-            add-apt-repository --yes --update ppa:ansible/ansible
-            apt install ansible
-            apt-get install python3.7
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            ./aws/install
+            apk add --update nodejs~=14 npm
+            yum install -y tar gzip
       - run:
           name: Get backend url
           command: |
@@ -276,7 +267,10 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - revert-migrations
-      - destroy-environment   
+      - destroy-environment:
+          environment: "backend"
+      - destroy-environment:
+          environment: "frontend" 
                     
 #   deploy-backend:
 #     docker:
