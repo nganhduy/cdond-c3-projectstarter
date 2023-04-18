@@ -242,14 +242,14 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/node:14.19.3
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            yum install -y nodejs
-            yum install -y tar gzip
+            apt-get update && apt-get install -y python3-pip && pip3 install awscli
+            apt-get update && apt-get install -y tar gzip
       - run:
           name: Get backend url
           command: |
