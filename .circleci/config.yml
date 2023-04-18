@@ -41,7 +41,7 @@ commands:
             then
               cd ~/project/backend
               npm install
-            #  Add revert code here. You can find this in the Getting Started section.
+              npm run build
             fi
             
 jobs:
@@ -267,7 +267,10 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - revert-migrations
-      - destroy-environment   
+      - destroy-environment:
+          environment: "backend"
+      - destroy-environment:
+          environment: "frontend"
                     
 #   deploy-backend:
 #     docker:
