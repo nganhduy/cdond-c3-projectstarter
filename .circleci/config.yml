@@ -185,7 +185,6 @@ jobs:
           command: |
             cd .circleci/ansible
             aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
       - persist_to_workspace:
           root: ~/
           paths:
@@ -204,6 +203,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["00:d4:aa:57:90:8f:db:43:f0:3d:63:75:6d:e6:9d:ed"]
+      - attach_workspace: 
+          at: ~/
       - run:
           name: Install dependencies
           command: |
