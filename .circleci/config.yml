@@ -250,6 +250,7 @@ jobs:
           command: |
             curl -sL https://deb.nodesource.com/setup_14.x | bash -
             apt-get install -y nodejs
+            yum install -y tar gzip
       - run:
           name: Get backend url
           command: |
