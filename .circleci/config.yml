@@ -220,6 +220,10 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
       - revert-migrations
+      - destroy-environment:
+          environment: "backend"
+      - destroy-environment:
+          environment: "frontend"
       # Here's where you will add some code to rollback on failure      
 
   run-migrations:
