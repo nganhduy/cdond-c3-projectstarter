@@ -7,15 +7,15 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      environment:
-        default: "backend"
+      id:
         type: string 
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-<<parameters.environment>>-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.id>>
   slack-notify: 
     description: Send notification in slack
     steps: 
@@ -190,9 +190,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
-          environment: "backend"
-      - destroy-environment:
-          environment: "frontend"
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
       - slack-notify    
 
   configure-infrastructure:
@@ -209,21 +207,15 @@ jobs:
           command: |
             apk add --update tar gzip ansible
             python -m pip install awscli
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/.circleci/ansible/inventory.txt
       - run:
           name: Configure server
           command: |
-            cd .circleci/ansible
+            cd ~/project/.circleci/ansible
+            cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       - revert-migrations
       - destroy-environment:
-          environment: "backend"
-      - destroy-environment:
-          environment: "frontend"
-      # Here's where you will add some code to rollback on failure      
+          id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
   run-migrations:
     docker:
@@ -244,6 +236,8 @@ jobs:
               curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
               fi
       - revert-migrations
+      - destroy-environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     docker:
@@ -277,9 +271,7 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - revert-migrations
       - destroy-environment:
-          environment: "backend"
-      - destroy-environment:
-          environment: "frontend"
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
                     
   deploy-backend:
     docker:
@@ -315,9 +307,7 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml
       - revert-migrations
       - destroy-environment:
-          environment: "backend"
-      - destroy-environment:
-          environment: "frontend"
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 #   smoke-test:
 #     docker:
