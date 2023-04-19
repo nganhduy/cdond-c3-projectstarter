@@ -193,8 +193,7 @@ jobs:
           environment: "backend"
       - destroy-environment:
           environment: "frontend"
-      - slack-notify
-      # Here's where you will add some code to rollback on failure      
+      - slack-notify    
 
   configure-infrastructure:
     docker:
