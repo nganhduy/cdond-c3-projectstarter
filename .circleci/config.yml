@@ -288,13 +288,19 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            apk update
+            # install ansible
+            apk add --update ansible
+            # install tar
             apk add --update tar
-            apk add gzip
-            apk add ansible
-            apk add nodejs
-            apk add npm
-            apk add curl
-            pip3 install awscli
+            # install nodejs and npm
+            apk add --update nodejs npm
+            # install aws cli
+            apk add --no-cache \
+                python3 \
+                py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install awscli
       - run:
           name: Deploy backend
           command: |
