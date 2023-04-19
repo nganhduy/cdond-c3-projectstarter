@@ -1,0 +1,31 @@
+- name: Extract zipped artifact
+  unarchive:
+    src: "{{ artifact }}"
+    dest: "{{ deploy_dir }}"
+    remote_src: yes
+    copy: no
+
+- name: Stop default pm2 process
+  command: pm2 stop default
+
+- name: Start app with pm2
+  command: pm2 start npm -- start
+  args:
+    chdir: "{{ deploy_dir }}"
+
+- name: Revert migration on fail
+  command: npm run db:rollback
+  args:
+    chdir: "{{ deploy_dir }}"
+  register: migration_rollback
+  ignore_errors: yes
+
+- name: Destroy environment on migration fail
+  command: "{{ item }}"
+  args:
+    chdir: "{{ deploy_dir }}"
+  when: migration_rollback is failed
+  with_items:
+    - pm2 stop all
+    - pm2 delete all
+    - rm -rf {{ deploy_dir }}
