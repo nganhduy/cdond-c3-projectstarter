@@ -224,6 +224,8 @@ jobs:
       - image: cimg/node:14.19.3
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
