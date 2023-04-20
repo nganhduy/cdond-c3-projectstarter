@@ -280,6 +280,8 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints: ["e9:08:d9:f2:2b:cc:a7:9a:2e:0f:32:bd:d9:8d:a8:9d"]
       - attach_workspace: 
           at: ~/
       - run:
@@ -287,8 +289,6 @@ jobs:
           command: |
             apk add --update ansible curl nodejs npm
             pip install awscli
-      - add_ssh_keys:
-          fingerprints: ["e9:08:d9:f2:2b:cc:a7:9a:2e:0f:32:bd:d9:8d:a8:9d"]
       - run:
           name: Deploy backend
           command: |
