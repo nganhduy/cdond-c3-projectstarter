@@ -285,15 +285,20 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["e9:08:d9:f2:2b:cc:a7:9a:2e:0f:32:bd:d9:8d:a8:9d"]
-      - attach_workspace: 
+      - attach_workspace:
           at: ~/
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible curl nodejs npm
-            pip install awscli
+            # apk add --update ansible nodejs npm rsync openssh
+            apk add ansible
+            apk add nodejs
+            apk add npm
+            apk add rsync
+            apk add curl
+            pip install awscli 
       - run:
-          name: Deploy backend
+          name: Build and deploy backend
           command: |
             cd backend
             npm install
@@ -304,10 +309,9 @@ jobs:
             mkdir .circleci/ansible/roles/deploy/files
             mv artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible
-            echo "Contents of the inventory.txt file is ----"
+            echo "COntents of the inventory.txt file is ----"
             cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
-      - revert-migrations
+            ansible-playbook -i inventory.txt deploy-backend.yml  
       - destroy-environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -340,8 +344,8 @@ jobs:
             else
               return 1
             fi
-      - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+      # - destroy-environment:
+      #     id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 #   cloudfront-update:
 #     docker:
