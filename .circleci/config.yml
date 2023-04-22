@@ -30,10 +30,7 @@ commands:
           event: pass
           template: basic_success_1
   revert-migrations:
-    description: Revert the last migration
-    parameters:
-      workflow_id:
-        type: string      
+    description: Revert the last migration 
     steps:
       - run:
         name: Revert migrations
@@ -217,7 +214,6 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
-      - revert-migrations
       - destroy-environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
