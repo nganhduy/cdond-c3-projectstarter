@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@4.12.1
+  slack: circleci/slack@4.10.1
   aws-cli: circleci/aws-cli@2.0.3
 commands:
   destroy-environment:
@@ -47,7 +47,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: cimg/node:14.19.3
+      - image: cimg/base:stable
     steps:
       - checkout
       - restore_cache:
@@ -83,7 +83,7 @@ jobs:
 
   test-frontend:
     docker:
-      - image: cimg/node:14.19.3
+      - image: cimg/base:stable
     steps:
       - checkout
       - restore_cache:
@@ -222,8 +222,6 @@ jobs:
       - image: cimg/node:14.19.3
     steps:
       - checkout
-      - attach_workspace: 
-          at: ~/
       - run:
           name: Run migrations
           command: |
