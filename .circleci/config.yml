@@ -47,7 +47,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:14.19.3
     steps:
       - checkout
       - restore_cache:
