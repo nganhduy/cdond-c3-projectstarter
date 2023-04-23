@@ -230,7 +230,7 @@ jobs:
             cd backend
             npm install
             npm run build
-            sudo npm run migrations > migration_output.txt
+            npm run migrations > migration_output.txt
             echo "Migration Result:------"
             cat migration_output.txt
       - run:
