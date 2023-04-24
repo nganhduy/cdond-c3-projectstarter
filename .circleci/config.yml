@@ -14,9 +14,8 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-<<parameters.id>> --recursive
-            aws s3 rb s3://udapeople-<<parameters.id>> --force
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
+            aws s3 rm s3://udapeople-<<parameters.id>> --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.id>>
   slack-notify: 
     description: Send notification in slack
@@ -39,7 +38,7 @@ commands:
             SUCCESS=$(curl --insecure  https://kvdb.io/9GE4jRtKznmVKRfvdBABBe/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if (( $SUCCESS == 1 ));
             then
-              cd ~/project/backend
+              cd backend
               npm install
               npm run migration:revert
             fi  
@@ -350,7 +349,7 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              return 0
+              return 1
             else
               return 1
             fi
