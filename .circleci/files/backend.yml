@@ -29,7 +29,7 @@ Resources:
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: furycity
-      ImageId: 
+      ImageId: am-d21d12sas
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
