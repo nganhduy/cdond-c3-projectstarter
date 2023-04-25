@@ -26,13 +26,10 @@ Resources:
           Principal: '*'
           Action: s3:GetObject
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
-        iamRoleStatements:
-          Effect: Allow
-          Action: s3:PutObject
+        - Sid: RequireBucketOwnerFullControl,
+          Action: s3:CreateBucket,
+          Effect: Deny,
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
-          Condition:
-            StringEquals:
-              s3:x-amz-acl: "public-read"
 
 Outputs:
   WebsiteURL:
