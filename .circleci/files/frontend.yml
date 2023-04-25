@@ -22,13 +22,13 @@ Resources:
       Bucket: !Ref 'WebsiteBucket'
       PolicyDocument:
         Statement:
-        - Sid: RequireBucketOwnerFullControl
-          Action: s3:CreateBucket
+        - Sid: PublicReadForGetBucketObjects
+          Effect: Allow
           Principal: '*'
-          Effect: Deny
+          Action: s3:GetObject
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
 
 Outputs:
   WebsiteURL:
-    Value: !GetAtt WebsiteBucket.WebsiteURL 
+    Value: !GetAtt WebsiteBucket.WebsiteURL
     Description: URL for website hosted on S3
