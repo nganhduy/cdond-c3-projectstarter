@@ -28,7 +28,8 @@ Resources:
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
         - Sid: RequireBucketOwnerFullControl
           Action: s3:CreateBucket,
-          Effect: Deny,
+          Principal: '*'
+          Effect: Allow,
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
 
 Outputs:
