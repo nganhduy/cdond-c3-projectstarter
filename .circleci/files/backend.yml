@@ -28,8 +28,8 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - Ref: InstanceSecurityGroup
-      KeyName: furycity
-      ImageId: ami-007855ac798b5175e
+      KeyName: udafurycity
+      ImageId: ami-0aa2b7722dc1b5612
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
