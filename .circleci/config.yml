@@ -50,7 +50,8 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - slack/notify
+      - slack/notify:
+          event: always
 
   build-backend:
     docker:
@@ -68,7 +69,8 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - slack/notify
+      - slack/notify:
+          event: always
 
   test-frontend:
     docker:
@@ -86,7 +88,8 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-test
-      - slack/notify
+      - slack/notify:
+          event: always
 
   test-backend:
     docker:
@@ -104,7 +107,8 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-test
-      - slack/notify
+      - slack/notify:
+          event: always
 
   scan-frontend:
     docker:
@@ -124,7 +128,8 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-scan
-      - slack/notify
+      - slack/notify:
+          event: always
 
   scan-backend:
     docker:
@@ -144,7 +149,8 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-scan
-      - slack/notify
+      - slack/notify:
+          event: always
 
   deploy-infrastructure:
     docker:
