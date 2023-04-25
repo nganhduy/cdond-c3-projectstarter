@@ -27,9 +27,9 @@ Resources:
           Effect: Deny
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
         - Sid: PublicReadForGetBucketObjects
-          Effect: Allow
-          Principal: '*'
           Action: s3:GetObject
+          Principal: '*'
+          Effect: Allow
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
 
 
