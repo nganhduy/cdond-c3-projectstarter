@@ -11,6 +11,9 @@ Resources:
     Properties:
       BucketName: !Sub "udapeople-${ID}"
       AccessControl: PublicRead
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: 404.html
@@ -27,9 +30,9 @@ Resources:
           Action: s3:GetObject
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
         - Sid: RequireBucketOwnerFullControl
-          Action: s3:CreateBucket,
+          Action: s3:CreateBucket
           Principal: '*'
-          Effect: Allow,
+          Effect: Deny
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
 
 Outputs:
