@@ -10,6 +10,7 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "udapeople-${ID}"
+      ACL: false
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -29,5 +30,5 @@ Resources:
 
 Outputs:
   WebsiteURL:
-    Value: !GetAtt WebsiteBucket.WebsiteURL
+    Value: !GetAtt WebsiteBucket.WebsiteURL 
     Description: URL for website hosted on S3
