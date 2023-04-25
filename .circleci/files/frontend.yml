@@ -12,7 +12,7 @@ Resources:
       BucketName: !Sub "udapeople-${ID}"
       OwnershipControls:
         Rules:
-          - ObjectOwnership: BucketOwnerPreferred
+          - ObjectOwnership: BucketOwnerEnforced
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
