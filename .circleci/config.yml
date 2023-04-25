@@ -18,17 +18,6 @@ commands:
             aws s3 rm s3://udapeople-<<parameters.id>> --recursive
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
             aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.id>>
-  slack-notify: 
-    description: Send notification in slack
-    steps: 
-      - slack/notify:
-          channel: udacity
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          channel: udacity
-          event: pass
-          template: basic_success_1
   revert-migrations:
     description: Revert the last migration 
     steps:
@@ -61,7 +50,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - slack-notify
+      - slack/notify
 
   build-backend:
     docker:
@@ -79,7 +68,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - slack-notify
+      - slack/notify
 
   test-frontend:
     docker:
@@ -97,7 +86,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-test
-      - slack-notify
+      - slack/notify
 
   test-backend:
     docker:
@@ -115,7 +104,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-test
-      - slack-notify
+      - slack/notify
 
   scan-frontend:
     docker:
@@ -135,7 +124,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-scan
-      - slack-notify
+      - slack/notify
 
   scan-backend:
     docker:
@@ -155,7 +144,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-scan
-      - slack-notify
+      - slack/notify
 
   deploy-infrastructure:
     docker:
@@ -193,8 +182,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - slack-notify    
+          id: ${CIRCLE_WORKFLOW_ID:0:7} 
 
   configure-infrastructure:
     docker:
