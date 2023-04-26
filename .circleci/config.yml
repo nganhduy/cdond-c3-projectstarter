@@ -366,6 +366,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+      - run:
           name: Update cloudfront distribution
           command: |
               export OldWorkflowID=$(aws cloudformation \
@@ -390,6 +394,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
       - run:
           name: Remove old stacks and files
           command: |
