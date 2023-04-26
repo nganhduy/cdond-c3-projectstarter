@@ -360,24 +360,19 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
       - attach_workspace:
           at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible curl nodejs npm
-            pip install awscli
       - run:
           name: Update cloudfront distribution
           command: |
               export OldWorkflowID=$(aws cloudformation \
                         list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                         --no-paginate --output text)
-              echo $OldWorkflowID >> OldWorkflowID.txt
-              cat OldWorkflowID.txt
+              echo $OldWorkflowID >> ~/OldWorkflowID.txt
+              cat ~/OldWorkflowID.txt
               aws cloudformation deploy \
                         --template-file .circleci/files/cloudfront.yml \
                         --stack-name InitialStack \
@@ -390,21 +385,17 @@ jobs:
 
   cleanup:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies
-          command: |
-            pip install awscli
-      - run:
           name: Remove old stacks and files
           command: |
-            cat OldWorkflowID.txt
-            OldWorkflowID=$(cat OldWorkflowID.txt)
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+            cat ~/OldWorkflowID.txt
+            OldWorkflowID=$(cat ~/OldWorkflowID.txt)
+            echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
             if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}"  ]] 
             then
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
