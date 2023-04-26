@@ -376,6 +376,7 @@ jobs:
                         list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                         --no-paginate --output text)
               echo $OldWorkflowID >> .circleci/files/OldWorkflowID.txt
+              echo "content of oldworkflow is ========="
               cat .circleci/files/OldWorkflowID.txt
               aws cloudformation deploy \
                         --template-file .circleci/files/cloudfront.yml \
@@ -401,8 +402,8 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            cat .circleci/files/OldWorkflowID.txt
-            OldWorkflowID=$(cat .circleci/files/OldWorkflowID.txt)
+            ls
+            echo OldWorkflowID: "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
             if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}"  ]] 
             then
