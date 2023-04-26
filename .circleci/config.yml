@@ -371,13 +371,17 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
+              export OldWorkflowID=$(aws cloudformation \
+                        list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                        --no-paginate --output text)
+              echo $OldWorkflowID >> ~/OldWorkflowID.txt
+              cat ~/OldWorkflowID.txt
               aws cloudformation deploy \
                         --template-file .circleci/files/cloudfront.yml \
-                        --stack-name InitialStack \
+                        --stack-name InitialStack-${$OldWorkflowID} \
                         --region ${AWS_DEFAULT_REGION} \
                         --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
                         --tags project=udapeople
-              echo Current WorkflowID: "${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
       # Here's where you will add some code to rollback on failure  
@@ -390,6 +394,7 @@ jobs:
         - run:
             name: Remove old stacks and files
             command: |
+              echo $OldWorkflowID
               # Fetch the Old workflow ID
               export OldWorkflowID=$(aws cloudformation \
                         list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
@@ -401,12 +406,11 @@ jobs:
                         --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
               echo Stack names: "${STACKS[@]}"
 
-              if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}"  ]]
+              if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}"  ]] 
               then
                 echo "============Delete Confirm============"
-                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-                aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                aws s3 rm "s3://${OldWorkflowID}" --recursive
+                aws cloudformation delete-stack --stack-name "InitialStack-${OldWorkflowID}"
               else
                 echo "============Cannot Cleanup============"
               fi
