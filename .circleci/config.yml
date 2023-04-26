@@ -395,9 +395,9 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Install tar utility
+          name: Install dependencies
           command: |
-            yum install -y tar gzip
+            pip install awscli
       - run:
           name: Remove old stacks and files
           command: |
