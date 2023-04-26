@@ -20,15 +20,17 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.id>>
   revert-migrations:
     description: Revert the last migration 
+    parameters:
+      id:
+        type: string 
     steps:
       - run:
           name: Revert migrations
           when: on_fail
           command: |
-            URL="https://kvdb.io/2aCVGrkHuaLFtyYb94e868/migration_${CIRCLE_WORKFLOW_ID:0:7}"
-            SUCCESS=$(curl --insecure ${URL})
+            SUCCESS=$(curl --insecure https://kvdb.io/2aCVGrkHuaLFtyYb94e868/migration_${CIRCLE_WORKFLOW_ID:0:7})
             echo ${SUCCESS}
-            if [[$SUCCESS = 1]]; then
+            if (($SUCCESS = 1)); then
               echo "Revert migration is running ======================="
               cd ~/project/backend
               npm install
