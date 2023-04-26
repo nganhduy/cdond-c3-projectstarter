@@ -360,23 +360,23 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - attach_workspace:
           at: ~/
       - run:
-          name: Install tar utility
+          name: Install dependencies
           command: |
-            yum install -y tar gzip
+            pip install awscli
       - run:
           name: Update cloudfront distribution
           command: |
               export OldWorkflowID=$(aws cloudformation \
                         list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                         --no-paginate --output text)
-              echo $OldWorkflowID >> ~/OldWorkflowID.txt
-              cat ~/OldWorkflowID.txt
+              echo $OldWorkflowID > ./OldWorkflowID.txt
+              cat ./OldWorkflowID.txt
               aws cloudformation deploy \
                         --template-file .circleci/files/cloudfront.yml \
                         --stack-name InitialStack \
@@ -401,8 +401,8 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            cat ~/OldWorkflowID.txt
-            OldWorkflowID=$(cat ~/OldWorkflowID.txt)
+            cat ./OldWorkflowID.txt
+            OldWorkflowID=$(cat ./OldWorkflowID.txt)
             echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
             if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}"  ]] 
             then
