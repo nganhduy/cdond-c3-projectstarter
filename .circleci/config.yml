@@ -274,6 +274,8 @@ jobs:
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
+        environment:
+          ENVIRONMENT: "production"
     steps:
       - checkout
       - add_ssh_keys:
@@ -380,44 +382,44 @@ jobs:
                         --template-file .circleci/files/cloudfront.yml \
                         --stack-name InitialStack \
                         --region ${AWS_DEFAULT_REGION} \
-                        --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+                        --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
                         --tags project=udapeople
       - destroy-environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
       # Here's where you will add some code to rollback on failure  
 
-  # cleanup:
-  #     docker:
-  #       - image: amazon/aws-cli
-  #     steps:
-  #       - checkout
-  #       - attach_workspace:
-  #         at: ~/
-  #       - run:
-  #           name: Remove old stacks and files
-  #           command: |
-  #             cat ~/OldWorkflowID.txt
-  #             # Fetch the Old workflow ID
-  #             export OldWorkflowID=$(aws cloudformation \
-  #                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-  #                       --no-paginate --output text)
-  #             echo OldWorkflowID: "${OldWorkflowID}"
-  #             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-  #             # Fetch the stack names          
-  #             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-  #                       --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-  #             echo Stack names: "${STACKS[@]}"
+  cleanup:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - attach_workspace:
+          at: ~/
+        - run:
+            name: Remove old stacks and files
+            command: |
+              cat ~/OldWorkflowID.txt
+              # Fetch the Old workflow ID
+              export OldWorkflowID=$(aws cloudformation \
+                        list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                        --no-paginate --output text)
+              echo OldWorkflowID: "${OldWorkflowID}"
+              echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+              # Fetch the stack names          
+              export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                        --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+              echo Stack names: "${STACKS[@]}"
 
-  #             if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}"  ]] 
-  #             then
-  #               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-  #               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-  #               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-  #             else
-  #               echo "============Cannot Cleanup============"
-  #             fi
-  #       - destroy-environment:
-  #           id: ${CIRCLE_WORKFLOW_ID:0:7}         
+              if [[ "${OldWorkflowID}" != "${CIRCLE_WORKFLOW_ID:0:7}"  ]] 
+              then
+                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              else
+                echo "============Cannot Cleanup============"
+              fi
+        - destroy-environment:
+            id: ${CIRCLE_WORKFLOW_ID:0:7}         
 
 workflows:
   default:
@@ -449,5 +451,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
+      - cleanup:
+          requires: [cloudfront-update]
