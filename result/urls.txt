@@ -1,2 +1,2 @@
-s3-url: http://udapeople-b8a075b.s3.amazonaws.com/index.html#/employees
+s3-url: http://udapeople-fa61090.s3-website-us-east-1.amazonaws.com/index.html#/
 github-url: https://github.com/nganhduy/cdond-c3-projectstarter
